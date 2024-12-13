@@ -1,0 +1,16 @@
+services:
+  server:
+    build: .
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/containers/test-task
+    container_name: test-ba
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    container_name: test-ba-db
