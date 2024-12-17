@@ -1,15 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Query } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ConfigService } from '@nestjs/config';
+import { PageDto, PageOptionsDto } from 'src/_dto/pagination.dto';
+import Product from 'src/_entity/product.entity';
 
-@Controller('product')
+@Controller('api/product/')
 export class ProductController {
-  constructor(
-    private readonly productService: ProductService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly productService: ProductService) {}
 
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
@@ -17,10 +15,8 @@ export class ProductController {
   }
 
   @Get()
-  findAll() {
-    console.log(this.configService.get('POSTGRES_DB'));
-
-    return this.productService.findAll();
+  getAll(@Query() pageOptionsDto: PageOptionsDto): Promise<PageDto<Product>> {
+    return this.productService.findAll(pageOptionsDto);
   }
 
   @Get(':id')
@@ -28,9 +24,9 @@ export class ProductController {
     return this.productService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(+id, updateProductDto);
+  @Post('update')
+  update(@Body() updateProductDto: UpdateProductDto) {
+    return this.productService.update(updateProductDto);
   }
 
   @Delete(':id')
